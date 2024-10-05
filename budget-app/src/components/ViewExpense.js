@@ -1,5 +1,5 @@
-import React from "react";
-import { Modal, Button, Stack, Table } from "react-bootstrap";
+import React, { useState } from "react";
+import { Modal, Button, Stack, Table, Form } from "react-bootstrap";
 import { UNCATEGORIZED_BUDGET_ID, useBudgets } from "../contexts/BudgetContext";
 import { currencyFormatter } from "../utils/currencyFormatter";
 import { timeFormatter } from "../utils/timeFormatter";
@@ -9,8 +9,13 @@ import {
 } from "../utils/toaster";
 
 export default function ViewExpense({ budgetId, handleClose }) {
-  const { getBudgetExpense, budget, deleteBudget, deleteExpense } =
-    useBudgets();
+  const {
+    getBudgetExpense,
+    budget,
+    deleteBudget,
+    deleteExpense,
+    updateExpense,
+  } = useBudgets(); // Added updateExpense
 
   const budgets =
     UNCATEGORIZED_BUDGET_ID === budgetId
@@ -18,8 +23,13 @@ export default function ViewExpense({ budgetId, handleClose }) {
       : budget.find((budget) => budget.id === budgetId);
 
   // Search expenses by date/description
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [searchDate, setSearchDate] = React.useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchDate, setSearchDate] = useState("");
+
+  // State for editing expenses
+  const [editingExpenseId, setEditingExpenseId] = useState(null);
+  const [editedDescription, setEditedDescription] = useState("");
+  const [editedAmount, setEditedAmount] = useState("");
 
   // Filter Function
   const filteredExpenses = getBudgetExpense(budgetId).filter((expense) => {
@@ -31,6 +41,15 @@ export default function ViewExpense({ budgetId, handleClose }) {
       : true;
     return matchesDescription && matchesDate;
   });
+
+  // Handle save edited expense
+  const handleSaveEdit = (expenseId) => {
+    updateExpense(expenseId, {
+      description: editedDescription,
+      amount: parseFloat(editedAmount),
+    });
+    setEditingExpenseId(null);
+  };
 
   return (
     <Modal show={budgetId != null} onHide={handleClose}>
@@ -69,7 +88,7 @@ export default function ViewExpense({ budgetId, handleClose }) {
           onChange={(e) => setSearchDate(e.target.value)}
         />
 
-        <Table striped bordered hover>
+        <Table striped bordered hover responsive>
           <thead>
             <tr>
               <th>Description</th>
@@ -81,19 +100,77 @@ export default function ViewExpense({ budgetId, handleClose }) {
           <tbody>
             {filteredExpenses.map((expense) => (
               <tr key={expense.id}>
-                <td>{expense.description}</td>
-                <td>{currencyFormatter.format(expense.amount)}</td>
+                <td>
+                  {editingExpenseId === expense.id ? (
+                    <Form.Control
+                      type="text"
+                      value={editedDescription}
+                      onChange={(e) => setEditedDescription(e.target.value)}
+                    />
+                  ) : (
+                    expense.description
+                  )}
+                </td>
+                <td>
+                  {editingExpenseId === expense.id ? (
+                    <Form.Control
+                      type="number"
+                      value={editedAmount}
+                      onChange={(e) => setEditedAmount(e.target.value)}
+                    />
+                  ) : (
+                    currencyFormatter.format(expense.amount)
+                  )}
+                </td>
                 <td>{timeFormatter(expense.time)}</td>
                 <td>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() =>
-                      showDeleteExpenseAlert(() => deleteExpense(expense.id))
-                    }
-                  >
-                    Delete
-                  </Button>
+                  {editingExpenseId === expense.id ? (
+                    <>
+                      <Button
+                        variant="outline-success"
+                        size="sm"
+                        onClick={() => handleSaveEdit(expense.id)}
+                        style={{ margin: "1px 3px" }}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={() => setEditingExpenseId(null)}
+                        style={{ margin: "1px 3px" }}
+                      >
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => {
+                          setEditingExpenseId(expense.id);
+                          setEditedDescription(expense.description);
+                          setEditedAmount(expense.amount);
+                        }}
+                        style={{ margin: "1px 3px" }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() =>
+                          showDeleteExpenseAlert(() =>
+                            deleteExpense(expense.id)
+                          )
+                        }
+                        style={{ margin: "1px 3px" }}
+                      >
+                        Delete
+                      </Button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}

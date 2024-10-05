@@ -39,22 +39,28 @@ function App() {
   return (
     <>
       <Container className="my-4">
-        <Stack direction="horizontal" gap="2" className="mb-5">
+        {/* Header */}
+        <Stack
+          direction="horizontal"
+          gap="2"
+          className="mb-4 border-bottom py-3 px-3"
+          style={{ backgroundColor: "#1f2c30", borderRadius: "8px" }}
+        >
           <Logo width="45" height="45" className="me-1" />
-          <h1 className="me-auto fw-bold text-secondary text-uppercase pt-1 fs-2">
+          <h1 className="me-auto fw-bold text-light text-uppercase pt-1 fs-2">
             BUDGET MANAGER
           </h1>
-          <Button variant="primary" onClick={() => setShowAddBudget(true)}>
+          <Button variant="light" onClick={() => setShowAddBudget(true)}>
             Add Budget
           </Button>
           <Button
-            variant="outline-primary"
+            variant="outline-light"
             onClick={() => setShowAddExpense(openAddExpenseModal)}
           >
             Add Expense
           </Button>
         </Stack>
-
+        {/* Budget Cards */}
         <div
           style={{
             display: "grid",
@@ -111,8 +117,28 @@ function App() {
         handleClose={() => setViewExpenseBudgetId(null)}
       />
 
-      {/* isualize expenses through pie charts */}
-      <PieChart />
+      {/* Visualize expenses through pie charts */}
+      <Container className="my-5 ">
+        <PieChart />
+      </Container>
+
+      {/* Footer 
+      <Container className="my-4">
+        <Stack
+          direction="horizontal"
+          gap="2"
+          className="mb-4 border-bottom py-3 px-3 justify-content-center"
+          style={{ backgroundColor: "#1f2c30", borderRadius: "8px" }}
+        >
+          <Logo width="45" height="45" className="me-1" />
+          <h1
+            className="fw-bold text-light pt-1 fs-5 text-center"
+            style={{ fontStyle: "italic", fontFamily: "cursive" }}
+          >
+            Made with 89 by Chernet
+          </h1>
+        </Stack>
+      </Container>*/}
     </>
   );
 }

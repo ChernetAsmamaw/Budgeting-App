@@ -2,6 +2,7 @@ import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import React, { useMemo } from "react";
 import { useBudgets } from "../contexts/BudgetContext";
+import { Stack } from "react-bootstrap";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -91,13 +92,33 @@ function BudgetSummary() {
   );
 
   return (
-    <div style={{ margin: "50px 20px" }}>
-      <h2 className="text-center text-secondary fw-bold text-uppercase fs-4 my-4">
+    <Stack
+      direction="vertical"
+      gap="2"
+      className="mb-4 py-3 px-3"
+      style={{
+        borderRadius: "8px",
+        border: "1px solid #000",
+        alignItems: "center",
+      }}
+    >
+      <h2 className="fw-bold text-dark text-uppercase pt-1 fs-4 text-center">
         Budget Summary
       </h2>
-      {/* Pass the dynamic chart data to the PieChart component */}
-      <PieChart data={chartData} />
-    </div>
+      <div
+        style={{
+          height: "500px",
+          width: "500px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          margin: "0 auto",
+          padding: "10px",
+        }}
+      >
+        <Pie data={chartData} />
+      </div>
+    </Stack>
   );
 }
 

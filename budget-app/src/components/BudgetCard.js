@@ -87,7 +87,10 @@ export default function BudgetCard({
         {/* Time stamp at the right corner */}
         <Card.Text
           className="text-muted mt-3 mb-auto align-self-end"
-          style={{ fontSize: "0.75rem", fontStyle: "italic" }}
+          style={{
+            fontSize: "0.75rem",
+            fontFamily: "monospace",
+          }}
         >
           {timeFormatter(time)}
         </Card.Text>
